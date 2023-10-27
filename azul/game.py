@@ -111,20 +111,13 @@ class AzulGame:
         tiles_to_remove = []  # Create a list to store tiles to remove       
         if any(tile.color == choiceColor for tile in self.garbage):                           
             for tile in self.garbage:
-                print("ppqpqpqpqpqpqpqqpqpqp " + tile.color)
                 if tile.color == 'start':
-                    print("q2w123312313123123")
-                    print(len(self.garbage))
                     self.players[self.current_player].board.broken.append(tile)
                     tiles_to_remove.append(tile)
-                    print(len(self.garbage))
                     continue                       
                 if tile.color == choiceColor:
-                    print("asdsdasdasdasdasdasdas")
-                    print(len(self.garbage))
                     tiles_picked.append(tile) #the user gets the tiles from that color
                     tiles_to_remove.append(tile)
-                    print(len(self.garbage))
             # Remove marked tiles
             for tile in tiles_to_remove:
                 self.garbage.remove(tile)                
@@ -152,14 +145,36 @@ class AzulGame:
             choiceLine, color = self.validate_chosen_line(tiles_picked)
             result = self.check_line_availability(choiceLine, color, tiles_picked)
             if result: break
-            
+
         return True
 
 
 
+    def is_game_over(self):
+        for player in self.players:
+            for line in player.board.wall:
+                if len(line) == 5:
+                    print("End of game.")
+                    return True
+        return False
+    
+    def is_turn_over(self):
+        if len(self.garbage) == 0 and all(len(display) == 0 for display in self.factory.factory_displays):
+            print("End of turn.")
+            return True
+        return False
+
     def play_round(self):
+        round = 1
         while True:
-            print("It's " + str(self.current_player) + " turn.")
+            if self.is_turn_over():
+                for player in self.players:
+                    for tile in player.board.broken:
+                        if tile.color == 'start':
+                            player.starter_tile = tile
+                            player.board.broken.remove(tile)
+                return True
+            print("It's " + str(self.current_player) + " turn. Round " + str(round))
             self.prints.print_starter_tile(self.players, self.current_player)
             print("Choose your action: ")
             print('1 - Buy from factory display')
@@ -174,7 +189,6 @@ class AzulGame:
                 if result: break
             else:
                 print("Invalid Oprion")
-
-    def is_game_over(self):
-        # Implement the game-ending condition
+        self.current_player = (self.current_player + 1) % len(self.players)
+        round += 1
         return False

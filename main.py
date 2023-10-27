@@ -5,13 +5,11 @@ if __name__ == "__main__":
     game = AzulGame(num_players)
     
     while not game.is_game_over():
-        game.play_round()
-        game.current_player = (game.current_player + 1) % len(game.players)
-        game.round += 1
+        while not game.is_turn_over():
+            result = game.play_round()
+        
 
 
 '''
-corrigir parece qo player 1 sempre coloca o STARTER no garbage
-
 corrigir quando jogador 1 volta a jogar e escolhe colocar na linha uma cor diferente da q ja tem la, ele da o aviso mas prossegue para o jogador 2
 '''
